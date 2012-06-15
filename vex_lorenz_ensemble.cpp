@@ -72,7 +72,7 @@ int main( int argc , char **argv )
 
 
     double Rmin = 0.1 , Rmax = 50.0 , dR = ( Rmax - Rmin ) / double( n - 1 );
-    std::vector<double> x( n * 3 ) , r( n );
+    std::vector<double> r( n );
     for( size_t i=0 ; i<n ; ++i ) r[i] = Rmin + dR * double( i );
 
     state_type X(ctx.queue(), n);

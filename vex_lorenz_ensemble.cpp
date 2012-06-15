@@ -66,7 +66,7 @@ int main( int argc , char **argv )
 {
     using namespace std;
 
-    vex::Context ctx( vex::Filter::Type(CL_DEVICE_TYPE_GPU) );
+    vex::Context ctx( vex::Filter::Type(CL_DEVICE_TYPE_GPU) && vex::Filter::Env );
     // std::cout << ctx << std::endl;
 
 

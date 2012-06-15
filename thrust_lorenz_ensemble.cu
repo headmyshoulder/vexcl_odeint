@@ -96,7 +96,7 @@ int main( int arc , char* argv[] )
 
 
     vector< value_type > beta_host( N );
-    const value_type beta_min = 0.1 , beta_max = 50.0;
+    const value_type beta_min = value_type(0.1) , beta_max = value_type(50.0);
     for( size_t i=0 ; i<N ; ++i )
         beta_host[i] = beta_min + value_type( i ) * ( beta_max - beta_min ) / value_type( N - 1 );
 
@@ -107,7 +107,7 @@ int main( int arc , char* argv[] )
     state_type x( 3 * N );
 
     // initialize x,y,z
-    thrust::fill( x.begin() , x.end() , 10.0 );
+    thrust::fill( x.begin() , x.end() , value_type(10.0) );
 
 
 
@@ -116,7 +116,7 @@ int main( int arc , char* argv[] )
 
 
     lorenz_system lorenz( N , beta );
-    integrate_const( stepper_type() , lorenz , x , 0.0 , t_max , dt );
+    integrate_const( stepper_type() , lorenz , x , value_type(0.0) , t_max , dt );
 
     thrust::host_vector< value_type > res = x;
     // for( size_t i=0 ; i<N ; ++i ) cout << res[i] << "\t" << beta_host[i] << "\n";

@@ -10,8 +10,10 @@
 
 namespace odeint = boost::numeric::odeint;
 
-typedef vex::vector< double >    vector_type;
-typedef vex::multivector< double, 3 > state_type;
+typedef double value_type;
+
+typedef vex::vector< value_type >    vector_type;
+typedef vex::multivector< value_type, 3 > state_type;
 
 namespace boost { namespace numeric { namespace odeint {
 
@@ -40,9 +42,9 @@ struct same_size_impl< state_type , state_type >
 } } }
 
 
-const double sigma = 10.0;
-const double b = 8.0 / 3.0;
-const double R = 28.0;
+const value_type sigma = 10.0;
+const value_type b = 8.0 / 3.0;
+const value_type R = 28.0;
 
 struct sys_func
 {
@@ -50,7 +52,7 @@ struct sys_func
 
     sys_func( const vector_type &_R ) : R( _R ) { }
 
-    void operator()( const state_type &x , state_type &dxdt , double t ) const
+    void operator()( const state_type &x , state_type &dxdt , value_type t ) const
     {
 	dxdt(0) = -sigma * ( x(0) - x(1) );
 	dxdt(1) = R * x(0) - x(1) - x(0) * x(2);
@@ -59,21 +61,21 @@ struct sys_func
 };
 
 const size_t n = 1024 * 64;
-const double dt = 0.01;
-const double t_max = 100.0;
+const value_type dt = 0.01;
+const value_type t_max = 100.0;
 
 int main( int argc , char **argv )
 {
     using namespace std;
 
     vex::Context ctx( vex::Filter::Type(CL_DEVICE_TYPE_GPU) && vex::Filter::Env );
-    // std::cout << ctx << std::endl;
+    std::cout << ctx << std::endl;
 
 
 
-    double Rmin = 0.1 , Rmax = 50.0 , dR = ( Rmax - Rmin ) / double( n - 1 );
-    std::vector<double> r( n );
-    for( size_t i=0 ; i<n ; ++i ) r[i] = Rmin + dR * double( i );
+    value_type Rmin = 0.1 , Rmax = 50.0 , dR = ( Rmax - Rmin ) / value_type( n - 1 );
+    std::vector<value_type> r( n );
+    for( size_t i=0 ; i<n ; ++i ) r[i] = Rmin + dR * value_type( i );
 
     state_type X(ctx.queue(), n);
     X(0) = 10.0;
@@ -83,13 +85,13 @@ int main( int argc , char **argv )
     vector_type R( ctx.queue() , r );
 
     odeint::runge_kutta4<
-	    state_type , double , state_type , double ,
+	    state_type , value_type , state_type , value_type ,
 	    odeint::vector_space_algebra , odeint::default_operations
 	    > stepper;
 
-    odeint::integrate_const( stepper , sys_func( R ) , X , 0.0 , t_max , dt );
+    odeint::integrate_const( stepper , sys_func( R ) , X , value_type(0.0) , t_max , dt );
 
-    std::vector< double > res( 3 * n );
+    std::vector< value_type > res( 3 * n );
     vex::copy( X(0) , res );
     // for( size_t i=0 ; i<n ; ++i )
     // 	cout << res[i] << "\t" << r[i] << "\n";

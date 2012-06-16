@@ -71,7 +71,7 @@ print('-depsc', 'abs.eps');
 figure(2)
 set(gca, 'FontSize', 18)
 
-loglog(n, v1avg ./ tavg, 'ko-', ...
+loglog(n, v1avg ./ tavg, 'ro-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
 hold on
@@ -85,6 +85,7 @@ loglog(n, v3avg ./ tavg, 'go-', ...
 loglog(n, ones(size(n)), 'k:');
 
 legend('1gpu', '2gpu', '3gpu');
+legend boxoff
 
 xlabel('N');
 ylabel('T(vexcl) / T(thrust)');

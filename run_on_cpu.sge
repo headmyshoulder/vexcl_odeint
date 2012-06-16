@@ -1,0 +1,17 @@
+#!/bin/bash
+#$ -V
+#$ -j y
+#$ -N lorenz_ensemble
+#$ -cwd
+#$ -l cores=4
+#$ -t 1:20
+
+export OCL_PLATFORM=AMD
+
+# warming run
+./vex_lorenz_ensemble 1024
+
+for ((a=256;a<=67108864;a*=2)); do
+    echo -n "$a "
+    /usr/bin/time -f %e ./vex_lorenz_ensemble $a
+done

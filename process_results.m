@@ -1,3 +1,6 @@
+close all
+clear all
+
 t  = load('thrust.dat');
 v1 = load('vexcl_1gpu.dat');
 v2 = load('vexcl_2gpu.dat');
@@ -36,10 +39,10 @@ hold on
 plot(n, v1avg, 'ro-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
-plot(n, v2avg, 'ro-', ...
+plot(n, v2avg, 'bo-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
-plot(n, v3avg, 'ro-', ...
+plot(n, v3avg, 'go-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
 xlabel('N');
@@ -58,11 +61,13 @@ plot(n, v1avg ./ tavg, 'ko-', ...
 
 hold on
 
-plot(n, v2avg ./ tavg, 'ko-', ...
+plot(n, v2avg ./ tavg, 'bo-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
-plot(n, v3avg ./ tavg, 'ko-', ...
+plot(n, v3avg ./ tavg, 'go-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
+
+plot(n, ones(size(n)), 'k:');
 
 legend('1gpu', '2gpu', '3gpu');
 

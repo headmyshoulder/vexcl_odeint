@@ -1,6 +1,9 @@
-all: thrust_lorenz_ensemble vex_lorenz_ensemble
+all: thrust_lorenz_ensemble vex_lorenz_ensemble thrust_lorenz_ensemble_openmp
 
 thrust_lorenz_ensemble: thrust_lorenz_ensemble.cu
+	nvcc -o $@ -I ../odeint-v2 -arch=sm_13 -O3 $^
+
+thrust_lorenz_ensemble_openmp: thrust_lorenz_ensemble_openmp.cu
 	nvcc -o $@ -I ../odeint-v2 -arch=sm_13 -O3 $^
 
 vex_lorenz_ensemble: vex_lorenz_ensemble.cpp

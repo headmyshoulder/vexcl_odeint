@@ -17,18 +17,18 @@ export OCL_MAX_DEVICES=1
 ./thrust_lorenz_ensemble 1024
 ./vex_lorenz_ensemble 1024
 
-echo "N;thrust" > thrust.dat
-echo "N;vexcl"  > vexcl.dat
+rm -f thrust.dat
+rm -f vexcl.dat
 
 for ((a=256;a<=67108864;a*=2)); do
     echo "$a "
     for run in `seq 20`; do
 	echo -n "."
 
-	echo -n "$a;" >> thrust.dat
+	echo -n "$a " >> thrust.dat
 	/usr/bin/time -f %e -o thrust.dat -a ./thrust_lorenz_ensemble $a > /dev/null
 
-	echo -n "$a;" >> vexcl.dat
+	echo -n "$a " >> vexcl.dat
 	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
     done
     echo ""

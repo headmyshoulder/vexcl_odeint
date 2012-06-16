@@ -4,21 +4,22 @@
 #$ -N lorenz_ensemble
 #$ -cwd
 #$ -m ae -M ddemidov@ksu.ru
-#$ -l cores=4,gpu=1
+#$ -l cores=4,gpu=3
 
 # Speed up cuda initialization on headless nodes.
 nvidia-smi -l 2>&1 > /dev/null &
 NVSMI_PID=$!
 
 export OCL_PLATFORM=NVIDIA
-export OCL_MAX_DEVICES=1
 
 # warming runs
 ./thrust_lorenz_ensemble 1024
 ./vex_lorenz_ensemble 1024
 
 rm -f thrust.dat
-rm -f vexcl.dat
+rm -f vexcl_1gpu.dat
+rm -f vexcl_2gpu.dat
+rm -f vexcl_3gpu.dat
 
 for ((a=256;a<=67108864;a*=2)); do
     echo "$a "
@@ -28,7 +29,16 @@ for ((a=256;a<=67108864;a*=2)); do
 	echo -n "$a " >> thrust.dat
 	/usr/bin/time -f %e -o thrust.dat -a ./thrust_lorenz_ensemble $a > /dev/null
 
-	echo -n "$a " >> vexcl.dat
+	export OCL_MAX_DEVICES=1
+	echo -n "$a " >> vexcl_1gpu.dat
+	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
+
+	export OCL_MAX_DEVICES=2
+	echo -n "$a " >> vexcl_2gpu.dat
+	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
+
+	export OCL_MAX_DEVICES=3
+	echo -n "$a " >> vexcl_3gpu.dat
 	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
     done
     echo ""

@@ -11,7 +11,10 @@ export OCL_PLATFORM=AMD
 # warming run
 ./vex_lorenz_ensemble 1024
 
+rm -f vexcl_cpu_${SGE_TASK_ID}.dat
+
 for ((a=256;a<=67108864;a*=2)); do
-    echo -n "$a "
-    /usr/bin/time -f %e ./vex_lorenz_ensemble $a
+    echo "$a"
+    echo -n "$a " >> vexcl_cpu_${SGE_TASK_ID}.dat
+    /usr/bin/time -f %e -o vexcl_cpu_${SGE_TASK_ID}.dat -a ./vex_lorenz_ensemble $a > /dev/null
 done

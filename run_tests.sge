@@ -1,0 +1,33 @@
+#!/bin/bash
+#$ -V
+#$ -j y
+#$ -N lorenz_ensemble
+#$ -cwd
+#$ -m ae -M ddemidov@ksu.ru
+#$ -l cores=4 gpu=1
+
+# Speed up cuda initialization on headless nodes.
+nvidia-smi -l 2>&1 > /dev/null
+NVSMI_PID=$!
+
+export OCL_PLATFORM=NVIDIA
+export OCL_MAX_DEVICES=1
+
+# warming runs
+./thrust_lorenz_ensemble 16384
+./vex_lorenz_ensemble 16384
+
+echo "N;thrust" > thrust.dat
+echo "N;vexcl"  > vexcl.dat
+
+for ((a=256; a <= 67108864; a *= 2)); do
+    for run in `seq 20`; do
+	echo -n "$a;" >> thrust.dat
+	time -f %e -a thust.dat ./thrust_lorenz_ensemble $a > /dev/null
+
+	echo -n "$a;" >> vexcl.dat
+	time -f %e -a vexcl.dat ./vex_lorenz_ensemble $a > /dev/null
+    done
+done
+
+kill $NVSMI_PID

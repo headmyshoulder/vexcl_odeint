@@ -60,12 +60,13 @@ struct sys_func
     }
 };
 
-const size_t n = 1024 * 64;
+size_t n;
 const value_type dt = 0.01;
 const value_type t_max = 100.0;
 
 int main( int argc , char **argv )
 {
+    n = argc > 1 ? atoi(argv[1]) : 1024;
     using namespace std;
 
     vex::Context ctx( vex::Filter::Type(CL_DEVICE_TYPE_GPU) && vex::Filter::Env );

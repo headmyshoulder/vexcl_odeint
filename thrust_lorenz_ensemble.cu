@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <utility>
+#include <cstdlib>
 
 
 #include <thrust/device_vector.h>
@@ -82,18 +83,19 @@ struct lorenz_system
 };
 
 
-const size_t N = 1024 * 64;
+size_t N;
 const value_type dt = 0.01;
 const value_type t_max = 100.0;
 
 
-int main( int arc , char* argv[] )
+int main( int argc , char* argv[] )
 {
     // int driver_version , runtime_version;
     // cudaDriverGetVersion( &driver_version );
     // cudaRuntimeGetVersion ( &runtime_version );
     // cout << driver_version << "\t" << runtime_version << endl;
 
+    N = argc > 1 ? atoi(argv[1]) : 1024;
 
     vector< value_type > beta_host( N );
     const value_type beta_min = value_type(0.1) , beta_max = value_type(50.0);

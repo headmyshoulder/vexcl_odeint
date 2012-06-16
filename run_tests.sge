@@ -31,15 +31,15 @@ for ((a=256;a<=67108864;a*=2)); do
 
 	export OCL_MAX_DEVICES=1
 	echo -n "$a " >> vexcl_1gpu.dat
-	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
+	/usr/bin/time -f %e -o vexcl_1gpu.dat -a ./vex_lorenz_ensemble $a > /dev/null
 
 	export OCL_MAX_DEVICES=2
 	echo -n "$a " >> vexcl_2gpu.dat
-	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
+	/usr/bin/time -f %e -o vexcl_2gpu.dat -a ./vex_lorenz_ensemble $a > /dev/null
 
 	export OCL_MAX_DEVICES=3
 	echo -n "$a " >> vexcl_3gpu.dat
-	/usr/bin/time -f %e -o vexcl.dat -a ./vex_lorenz_ensemble $a > /dev/null
+	/usr/bin/time -f %e -o vexcl_3gpu.dat -a ./vex_lorenz_ensemble $a > /dev/null
     done
     echo ""
 done

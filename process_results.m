@@ -82,9 +82,12 @@ loglog(n, v2avg ./ tavg, 'bo-', ...
 loglog(n, v3avg ./ tavg, 'go-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
+loglog(n, vcavg ./ tavg, 'md-', ...
+		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
+
 loglog(n, ones(size(n)), 'k:');
 
-legend('1gpu', '2gpu', '3gpu');
+legend('1gpu', '2gpu', '3gpu', 'vexcl on cpu');
 legend boxoff
 
 xlabel('N');

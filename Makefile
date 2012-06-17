@@ -3,8 +3,8 @@ all: thrust_lorenz_ensemble vex_lorenz_ensemble thrust_lorenz_ensemble_openmp
 thrust_lorenz_ensemble: thrust_lorenz_ensemble.cu
 	nvcc -o $@ -I ../odeint-v2 -arch=sm_13 -O3 $^
 
-thrust_lorenz_ensemble_openmp: thrust_lorenz_ensemble_openmp.cu
-	nvcc -o $@ -I ../odeint-v2 -arch=sm_13 -O3 -Xcompiler -fopenmp $^
+thrust_lorenz_ensemble_openmp: thrust_lorenz_ensemble.cu
+	nvcc -o $@ -I ../odeint-v2 -arch=sm_13 -O3 -Xcompiler -fopenmp -DTHRUST_DEVICE_BACKEND=THRUST_DEVICE_BACKEND_OMP $^
 
 vex_lorenz_ensemble: vex_lorenz_ensemble.cpp
 	g++ -o $@ -std=c++0x -I ../odeint-v2 -I ~/work/vexcl -O3 -lOpenCL $^

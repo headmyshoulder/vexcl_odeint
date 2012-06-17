@@ -1,44 +1,47 @@
 close all
 clear all
 
-t  = load('thrust.dat');
+t  = load('thrust_gpu.dat');
+tc = load('thrust_cpu.dat');
 v1 = load('vexcl_1gpu.dat');
 v2 = load('vexcl_2gpu.dat');
 v3 = load('vexcl_3gpu.dat');
-n = unique(t(:,1))';
-
 vc = load('vexcl_cpu.dat');
-m = unique(vc(:,1))';
+n  = unique(t(:,1))';
 
 tavg  = [];
+tcavg = [];
 v1avg = [];
 v2avg = [];
 v3avg = [];
+vcavg = [];
 
 for i = n
     I = find(t(:,1) == i);
-
     time = sum(t(I,2)) / length(I);
     tavg = [tavg time];
 
+    I = find(tc(:,1) == i);
+    time = sum(tc(I,2)) / length(I);
+    tcavg = [tcavg time];
+
+    I = find(v1(:,1) == i);
     time = sum(v1(I,2)) / length(I);
     v1avg = [v1avg time];
 
+    I = find(v2(:,1) == i);
     time = sum(v2(I,2)) / length(I);
     v2avg = [v2avg time];
 
+    I = find(v3(:,1) == i);
     time = sum(v3(I,2)) / length(I);
     v3avg = [v3avg time];
-end
 
-vcavg = [];
-
-for i = m
     I = find(vc(:,1) == i);
-
     time = sum(vc(I,2)) / length(I);
     vcavg = [vcavg time];
 end
+
 
 figure(1)
 set(gca, 'FontSize', 18)
@@ -57,13 +60,19 @@ loglog(n, v2avg, 'bo-', ...
 loglog(n, v3avg, 'go-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
-loglog(m, vcavg, 'md-', ...
+loglog(n, tcavg, 'kd-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
+loglog(n, vcavg, 'md-', ...
+		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
+
+xlim([1e2 1e7])
+set(gca, 'xtick', [1e2 1e3 1e4 1e5 1e6 1e7])
 xlabel('N');
 ylabel('T (sec)');
 
-legend('thrust', 'vexcl 1gpu', 'vexcl 2gpu', 'vexcl 3gpu', 'vexcl cpu', 'location', 'northwest');
+legend('thrust', 'vexcl 1gpu', 'vexcl 2gpu', 'vexcl 3gpu', 'thrust cpu', ...
+    'vexcl cpu', 'location', 'northwest');
 legend boxoff
 
 print('-depsc', 'abs.eps');
@@ -82,14 +91,20 @@ loglog(n, v2avg ./ tavg, 'bo-', ...
 loglog(n, v3avg ./ tavg, 'go-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
+loglog(n, tcavg ./ tavg, 'kd-', ...
+		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
+
 loglog(n, vcavg ./ tavg, 'md-', ...
 		'linewidth', 2, 'markersize', 6, 'markerfacecolor', 'w');
 
 loglog(n, ones(size(n)), 'k:');
 
-legend('1gpu', '2gpu', '3gpu', 'vexcl on cpu');
+h = legend('1gpu', '2gpu', '3gpu', 'thrust cpu', 'vexcl cpu');
 legend boxoff
+set(h, 'FontSize', 16)
 
+xlim([1e2 1e7])
+set(gca, 'xtick', [1e2 1e3 1e4 1e5 1e6 1e7])
 xlabel('N');
 ylabel('T(vexcl) / T(thrust)');
 

@@ -21,7 +21,7 @@ rm -f vexcl_1gpu.dat
 rm -f vexcl_2gpu.dat
 rm -f vexcl_3gpu.dat
 
-for ((a=256;a<=67108864;a*=2)); do
+for ((a=256;a<=4194304;a*=2)); do
     echo "$a "
     for run in `seq 20`; do
 	echo -n "."

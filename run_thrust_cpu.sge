@@ -13,7 +13,7 @@ export OCL_PLATFORM=AMD
 
 rm -f thrust_cpu_${SGE_TASK_ID}.dat
 
-for ((a=256;a<=67108864;a*=2)); do
+for ((a=256;a<=4194304;a*=2)); do
     echo "$a"
     echo -n "$a " >> thrust_cpu_${SGE_TASK_ID}.dat
     /usr/bin/time -f %e -o thrust_cpu_${SGE_TASK_ID}.dat -a ./thrust_lorenz_ensemble_openmp $a > /dev/null

@@ -3,17 +3,18 @@
 #include <utility>
 #include <tuple>
 
-#include <vexcl/vexcl.hpp>
+#include <viennacl/vector.hpp>
+#include <viennacl/vector_proxy.hpp>
+
 
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/odeint/algebra/vector_space_algebra.hpp>
+
 
 namespace odeint = boost::numeric::odeint;
 
 typedef double value_type;
 
-typedef vex::vector< value_type >    vector_type;
-typedef vex::multivector< value_type, 3 > state_type;
+typedef viennacl::vector< value_type > state_type;
 
 namespace boost { namespace numeric { namespace odeint {
 
@@ -25,7 +26,7 @@ struct resize_impl< state_type , state_type >
 {
     static void resize( state_type &x1 , const state_type &x2 )
     {
-	x1.resize( x2.queue_list() , x2.size() );
+	x1.resize( x2.size() , false );
     }
 };
 
@@ -48,15 +49,24 @@ const value_type R = 28.0;
 
 struct sys_func
 {
-    const vector_type &R;
+    const state_type &R;
+    size_t n;
 
-    sys_func( const vector_type &_R ) : R( _R ) { }
+    sys_func( const state_type &_R ) : R( _R ) , n( _R.size() ) { }
 
     void operator()( const state_type &x , state_type &dxdt , value_type t ) const
     {
-	dxdt(0) = -sigma * ( x(0) - x(1) );
-	dxdt(1) = R * x(0) - x(1) - x(0) * x(2);
-	dxdt(2) = - b * x(2) + x(0) * x(1);
+	viennacl::vector_range< state_type > dX( dxdt , viennacl::range( 0 , n ) );
+	viennacl::vector_range< state_type > dY( dxdt , viennacl::range( n , 2 * n ) );
+	viennacl::vector_range< state_type > dZ( dxdt , viennacl::range( 2 * n , 3 * n ) );
+
+	viennacl::vector_range< const state_type > X( x , viennacl::range( 0 , n ) );
+	viennacl::vector_range< const state_type > Y( x , viennacl::range( n , 2 * n ) );
+	viennacl::vector_range< const state_type > Z( x , viennacl::range( 2 * n , 3 * n ) );
+
+	dX = -sigma * ( X - Y ) ;
+	dY = R * X - Y - X * Z ;
+	dZ = - b * Z + X * Y ;
     }
 };
 
@@ -66,24 +76,21 @@ const value_type t_max = 100.0;
 
 int main( int argc , char **argv )
 {
-    n = argc > 1 ? atoi(argv[1]) : 1024;
     using namespace std;
 
-    vex::Context ctx( vex::Filter::Env );
-    std::cout << ctx << std::endl;
-
+    n = argc > 1 ? atoi( argv[1] ) : 1024;
 
 
     value_type Rmin = 0.1 , Rmax = 50.0 , dR = ( Rmax - Rmin ) / value_type( n - 1 );
     std::vector<value_type> r( n );
     for( size_t i=0 ; i<n ; ++i ) r[i] = Rmin + dR * value_type( i );
 
-    state_type X(ctx.queue(), n);
-    X(0) = 10.0;
-    X(1) = 10.0;
-    X(2) = 10.0;
+    std::vector< value_type > x( 3*n , 10 );
+    state_type X( 3 * n );
+    viennacl::copy( x , X );
 
-    vector_type R( ctx.queue() , r );
+    state_type R( n );
+    viennacl::copy( r , R );
 
     odeint::runge_kutta4<
 	    state_type , value_type , state_type , value_type ,
@@ -92,10 +99,10 @@ int main( int argc , char **argv )
 
     odeint::integrate_const( stepper , sys_func( R ) , X , value_type(0.0) , t_max , dt );
 
-    std::vector< value_type > res( 3 * n );
-    vex::copy( X(0) , res );
+    std::vector< value_type > res( n );
+    viennacl::copy( X.begin() , X.begin() + n , res.begin() );
     for( size_t i=0 ; i<n ; ++i )
-    	cout << res[i] << "\t" << r[i] << "\n";
-    // cout << res[0] << endl;
+     	cout << res[i] << "\t" << r[i] << "\n";
+//    cout << res[0] << endl;
 
 }

@@ -94,8 +94,8 @@ int main( int argc , char **argv )
 
     std::vector< value_type > res( 3 * n );
     vex::copy( X(0) , res );
-    for( size_t i=0 ; i<n ; ++i )
-    	cout << res[i] << "\t" << r[i] << "\n";
-    // cout << res[0] << endl;
+    // for( size_t i=0 ; i<n ; ++i )
+    // 	cout << res[i] << "\t" << r[i] << "\n";
+    cout << res[0] << endl;
 
 }

@@ -76,6 +76,7 @@ int main( int argc , char **argv )
     std::vector< value_type > res( n );
     vex::copy( X , res );
     cout << res[0] << endl;
+//    for( size_t i=0 ; i<n ; ++i ) cout << res[i] << endl;
 
     return 0;
 }

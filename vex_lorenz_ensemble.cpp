@@ -6,7 +6,8 @@
 #include <vexcl/vexcl.hpp>
 
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/odeint/algebra/vector_space_algebra.hpp>
+#include <boost/numeric/odeint/external/vexcl/vexcl_resize.hpp>
+
 
 namespace odeint = boost::numeric::odeint;
 
@@ -14,32 +15,6 @@ typedef double value_type;
 
 typedef vex::vector< value_type >    vector_type;
 typedef vex::multivector< value_type, 3 > state_type;
-
-namespace boost { namespace numeric { namespace odeint {
-
-template<>
-struct is_resizeable< state_type > : boost::true_type { };
-
-template<>
-struct resize_impl< state_type , state_type >
-{
-    static void resize( state_type &x1 , const state_type &x2 )
-    {
-	x1.resize( x2.queue_list() , x2.size() );
-    }
-};
-
-template<>
-struct same_size_impl< state_type , state_type >
-{
-    static bool same_size( const state_type &x1 , const state_type &x2 )
-    {
-	return x1.size() == x2.size();
-    }
-};
-
-
-} } }
 
 
 const value_type sigma = 10.0;
@@ -69,7 +44,7 @@ int main( int argc , char **argv )
     n = argc > 1 ? atoi(argv[1]) : 1024;
     using namespace std;
 
-    vex::Context ctx( vex::Filter::Env );
+    vex::Context ctx( vex::Filter::Type(CL_DEVICE_TYPE_GPU) );
     std::cout << ctx << std::endl;
 
 

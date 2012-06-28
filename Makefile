@@ -10,7 +10,8 @@ all: thrust_lorenz_ensemble \
 	thrust_phase_oscillator_chain \
 	vex_lorenz_ensemble \
 	vex_phase_oscillator_chain \
-	viennacl_lorenz_ensemble
+	vex_phase_oscillator_chain_v2 \
+#	viennacl_lorenz_ensemble
 
 thrust_lorenz_ensemble: thrust_lorenz_ensemble.cu
 	$(NVCC) -o $@ -I$(ODEINT_ROOT) -I$(BOOST_ROOT) -arch=sm_13 --compiler-bindir=/usr/bin/g++-4.4 -O3 $^
@@ -25,6 +26,9 @@ vex_lorenz_ensemble: vex_lorenz_ensemble.cpp
 	g++ -o $@ -std=c++0x -I$(ODEINT_ROOT) -I$(BOOST_ROOT) -I$(VEXCL_ROOT) -I$(CUDA_INC) -O3 $^ -lOpenCL
 
 vex_phase_oscillator_chain : vex_phase_oscillator_chain.cpp
+	g++ -o $@ -std=c++0x -I$(ODEINT_ROOT) -I$(BOOST_ROOT) -I$(VEXCL_ROOT) -I$(CUDA_INC) -O3 $^ -lOpenCL
+
+vex_phase_oscillator_chain_v2 : vex_phase_oscillator_chain_v2.cpp
 	g++ -o $@ -std=c++0x -I$(ODEINT_ROOT) -I$(BOOST_ROOT) -I$(VEXCL_ROOT) -I$(CUDA_INC) -O3 $^ -lOpenCL
 
 viennacl_lorenz_ensemble : viennacl_lorenz_ensemble.cpp

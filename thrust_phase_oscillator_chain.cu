@@ -114,13 +114,13 @@ private:
 
 size_t n;
 const value_type pi = 3.1415926535897932384626433832795029;
-const value_type epsilon = 6.0 / ( n * n ); // should be < 8/N^2 to see phase locking
-const value_type dt = 0.1;
+const value_type dt = 0.01;
 const value_type t_max = 100.0;
 
 int main( int argc , char* argv[] )
 {
     n = ( argc > 1 ) ? atoi(argv[1]) : 1024;
+    const value_type epsilon = 6.0 / ( n * n ); // should be < 8/N^2 to see phase locking
 
     vector< value_type > x_host( n );
     vector< value_type > omega_host( n );
